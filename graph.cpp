@@ -10,38 +10,39 @@ using namespace std;
 const int MAX_X = 10 + 2;//стр
 const int MAX_Y = 10 + 2;//столб
 
-void Control(int code, int **pMas, int *pXandY)
+void Control(int code, int **pMas, int &X, int &Y)
 {
 	int result = 0;
-	pMas[pXandY[0]][pXandY[1]] = 0;//" "
+	//pMas[pXandY[0]][pXandY[1]] = 0;//" "
+	pMas[X][Y] = 0;//" "
 	switch (code)
 
 	{
 	case 72://up 
-		if (pXandY[0] == 1) pXandY[0] = MAX_X-2;
+		if (X == 1) X = MAX_X-2;
 		else
-		pXandY[0]--;
+		X--;
 		break;
 
 	case 80://down 
-		if (pXandY[0] == MAX_X - 2) pXandY[0] = 1;
+		if (X == MAX_X - 2) X = 1;
 		else
-		pXandY[0]++;
+		X++;
 		break;
 
 	case 75://left 
-		if (pXandY[1] == 1) pXandY[1] = MAX_Y - 2;
+		if (Y == 1) Y = MAX_Y - 2;
 		else
-		pXandY[1]--;
+		Y--;
 		break;
 
 	case 77://right 
-		if (pXandY[1] == MAX_Y - 2) pXandY[1] = 1;
+		if (Y == MAX_Y - 2) Y = 1;
 		else
-		pXandY[1]++;
+		Y++;
 		break;
 	}
-	pMas[pXandY[0]][pXandY[1]] = 7;//*
+	pMas[X][Y] = 7;
 
 }
 
@@ -90,9 +91,9 @@ void graph(int **pMas)
 
 int main()
 {
-	int *pXandY = new int[2]; //стр
-	pXandY[0] = 1;//x
-	pXandY[1] = 1;//y
+
+	int X = 1;
+	int Y = 1;
 	
 	//создание
 	int **pMas = new int*[MAX_X]; //стр
@@ -114,7 +115,7 @@ int main()
 	// 5 - "╔"
 	// 6 - "╗"
 
-	pMas[pXandY[0]][pXandY[1]] = 7;//*
+	pMas[X][Y] = 7;//*
 	pMas[MAX_X - 1][0] = 3;//╚
 	pMas[MAX_X - 1][MAX_Y - 1] = 4;//╝
 	pMas[0][0] = 5; //╔
@@ -135,7 +136,7 @@ int main()
 
 	while (true)
 	{
-		Control(_getch(), pMas, pXandY);
+		Control(_getch(), pMas, X, Y);
 		graph(pMas);
 	}
 
