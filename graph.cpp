@@ -28,13 +28,15 @@ void graph(int **pMas, int &quality, int &CUR_X, int &CUR_Y)
 	// 5 - "╔"
 	// 6 - "╗"
 	system("cls");
-
+	
 	for (int count_row = 0; count_row < CUR_X; count_row++)
 	{
 		for (int count_column = 0; count_column < CUR_Y; count_column++)
 		{
 			if (pMas[count_row][count_column] == 0) cout << '\0';//" "
-			if (pMas[count_row][count_column] == 7) cout << '*';
+			if (pMas[count_row][count_column] == 7) cout << '#';//*
+			if (pMas[count_row][count_column] == 8) cout << '-';//-
+			if (pMas[count_row][count_column] == 9) cout << char(124);//i
 				
 			if (quality == 1)
 			{
@@ -48,6 +50,9 @@ void graph(int **pMas, int &quality, int &CUR_X, int &CUR_Y)
 		}
 		cout << endl;
 	}
+	
+
+
 }
 
 void Control(int code, int **pMas, int &X, int &Y, int &quality, int &CUR_X, int &CUR_Y)
@@ -92,11 +97,14 @@ void Control(int code, int **pMas, int &X, int &Y, int &quality, int &CUR_X, int
 
 int main()
 {
-	int CUR_X = MAX_X;
-	int CUR_Y = MAX_Y;
+	//int CUR_X = MAX_X;
+	//int CUR_Y = MAX_Y;
+	int CUR_X = 5;
+	int CUR_Y = 5;
 	int quality_graphics = 1;
-	cout << "Press space twice to change the quality of the graphics.";
-	cout <<endl <<"Press any key to start." << endl;
+	cout <<"Press space twice to change the quality of the graphics.";
+	cout <<endl <<"Use the arrows to move around.";
+	cout <<endl <<"Press any key to start." <<endl;
 	system("pause");
 	int X = 1;
 	int Y = 1;
@@ -125,6 +133,7 @@ int main()
 	// 6 - "╗"
 
 	pMas[X][Y] = 7;//*
+	pMas[X][Y + 1] = 8;//-
 	pMas[CUR_X - 1][0] = 3;//╚
 	pMas[CUR_X - 1][CUR_Y - 1] = 4;//╝
 	pMas[0][0] = 5; //╔
