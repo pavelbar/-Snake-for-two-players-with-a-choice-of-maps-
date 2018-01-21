@@ -8,21 +8,27 @@ using namespace std;
 
 const int MAX_Y = 22 + 2;//стр
 const int MAX_X = 77 + 2;//столб
-const int TACT = 40;//задержка
+const int TACT = 70;//задержка
 
+enum ConsoleColor { Black = 0, Blue, Green, Cyan, Red, Magenta, Brown, LightGray, DarkGray, LightBlue, LightGreen, LightCyan, LightRed, LightMagenta, Yellow, White };
 
-void symbolToPoint(int column, int line, char symbol)
+ConsoleColor FOREGROUND = White;
+ConsoleColor BACKGROUND = Black;
+
+void symbolToPoint(int column, int line, char symbol, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
 {
 	COORD coord;
 	coord.X = column;
 	coord.Y = line;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((BACKGROUND << 4) | FOREGROUND));
 	cout << symbol;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((Black << 4) | White));
 }
 
 void Control(int code, int &X, int &Y, int CUR_X, int CUR_Y)
 {
-	symbolToPoint(X, Y, '\0');
+	symbolToPoint(X, Y, '\0', FOREGROUND, BACKGROUND);
 	switch (code)
 	{
 	case 72://up 
@@ -53,7 +59,7 @@ void Control(int code, int &X, int &Y, int CUR_X, int CUR_Y)
 		exit(0);
 		break;
 	}
-	symbolToPoint(X, Y, '*');
+	symbolToPoint(X, Y, '*', FOREGROUND, BACKGROUND);
 }
 
 void graphBorder(int CUR_X, int CUR_Y)
@@ -83,17 +89,12 @@ int main()
 	int X = 1, Y = 1;//Начальное положение точки
 	
 	graphBorder(CUR_X, CUR_Y);//start
-	symbolToPoint(X, Y, '*');//start
+	symbolToPoint(X, Y, '*', FOREGROUND, BACKGROUND);
 
 	while (true)
 	{
-		while (_getch())
-		{
-			Control(_getch(), X, Y, CUR_X, CUR_Y);
-
-		}
+		Control(_getch(), X, Y, CUR_X, CUR_Y);
 		Sleep(TACT);
-
 	}
 
 	return 0;
