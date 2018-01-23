@@ -7,7 +7,7 @@
 #include <random>
 #include <string>
 
-	using namespace std;
+using namespace std;
 
 const int MAX_Y = 21 + 2;//стр
 const int MAX_X = 77 + 2;//столб
@@ -89,8 +89,6 @@ void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int 
 	{
 	case 72://up 
 	{
-		//for (int i = 0; i < len; i++)
-		//Y[i]--;
 		delta_x = 0;
 		delta_y = -1;
 
@@ -109,8 +107,6 @@ void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int 
 
 	case 80://down 
 	{
-		//for (int i = 0; i < len; i++)
-		//Y[i]++;
 		delta_x = 0;
 		delta_y = 1;
 
@@ -129,8 +125,6 @@ void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int 
 
 	case 75://left 
 	{
-		//for (int i = 0; i < len; i++)
-		//X[i]--;
 		delta_x = -1;
 		delta_y = 0;
 
@@ -149,8 +143,6 @@ void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int 
 
 	case 77://right 
 	{
-		//for (int i = 0; i < len; i++)
-		//X[i]++;
 		delta_x = 1;
 		delta_y = 0;
 
@@ -187,11 +179,6 @@ void Coordinate_transformation_automatically(int *X, int *Y, int len, int &delta
 	// Передвигаем голову змейки.
 	X[0] = X[0] + delta_x;
 	Y[0] = Y[0] + delta_y;
-	//for (int i = 0; i < len; i++)
-	//{
-	//	X[i] = X[i] + delta_x;
-	//	Y[i] = Y[i] + delta_y;
-	//}
 }
 
 void Correction_of_oordinates(int *X, int *Y, int len)
@@ -255,14 +242,20 @@ void Generation_of_food_coordinates(int &food_x, int &food_y, int *X, int *Y, in
 
 void Clear_snake(int *X, int *Y, int len, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
 {
-	for (int i = 0; i <len; i++)
+	for (int i = 0; i < len; i++)
 		Symbol_to_point(X[i], Y[i], '\0', FOREGROUND, BACKGROUND);
 }
 
-void Print_snake(int *X, int *Y, int len, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
+void Print_snake(int *X, int *Y, int len, int delta_x, int delta_y, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
 {
-		Symbol_to_point(X[0], Y[0], '*', SNAKE_HEAD_FOREGROUND, SNAKE_HEAD_BACKGROUND);
-	for (int i = 1; i <len; i++)
+
+	if ((delta_x == 0) && (delta_y == 0)) 	Symbol_to_point(X[0], Y[0], char(142), SNAKE_HEAD_FOREGROUND, BACKGROUND);
+	if ((delta_x == -1) && (delta_y == 0)) 	Symbol_to_point(X[0], Y[0], '<', SNAKE_HEAD_FOREGROUND, BACKGROUND);
+	if ((delta_x == 1) && (delta_y == 0)) 	Symbol_to_point(X[0], Y[0], '>', SNAKE_HEAD_FOREGROUND, BACKGROUND);
+	if ((delta_x == 0) && (delta_y == 1)) 	Symbol_to_point(X[0], Y[0], char(194), SNAKE_HEAD_FOREGROUND, BACKGROUND);
+	if ((delta_x == 0) && (delta_y == -1)) 	Symbol_to_point(X[0], Y[0], '^', SNAKE_HEAD_FOREGROUND, BACKGROUND);
+
+	for (int i = 1; i < len; i++)
 		Symbol_to_point(X[i], Y[i], char(142), SNAKE_BODY_FOREGROUND, BACKGROUND); //* SNAKE_BODY_BACKGROUND
 }
 
@@ -318,7 +311,7 @@ int main()
 		{
 			Symbol_to_point(food_x, food_y, '\0', FOREGROUND, BACKGROUND);
 			Generation_of_food_coordinates(food_x, food_y, p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake);
-			Symbol_to_point(food_x, food_y, 'F' , FOOD_FOREGROUND, FOOD_BACKGROUND);
+			Symbol_to_point(food_x, food_y, char(142), FOOD_FOREGROUND, BACKGROUND);
 			need_food = false;
 		}
 
@@ -328,7 +321,7 @@ int main()
 			Coordinate_transformation_automatically(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake, delta_x, delta_y);//если кнопка не нажата
 
 		Correction_of_oordinates(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake);
-		Print_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake, FOREGROUND, BACKGROUND);
+		Print_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake, delta_x, delta_y, FOREGROUND, BACKGROUND);
 
 		Delta_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, food_x, food_y, need_food, length_of_snake, length_of_snake, D_delay, D_count_for_delay, D_print_speed);
 
