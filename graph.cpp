@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 
 #include <windows.h>
@@ -6,19 +7,36 @@
 #include <random>
 #include <string>
 
-using namespace std;
+	using namespace std;
 
 const int MAX_Y = 21 + 2;//стр
 const int MAX_X = 77 + 2;//столб
-const int START_DELAY = 150;//задержка
 
 enum ConsoleColor { Black = 0, Blue, Green, Cyan, Red, Magenta, Brown, LightGray, DarkGray, LightBlue, LightGreen, LightCyan, LightRed, LightMagenta, Yellow, White };
 
 ConsoleColor FOREGROUND = White;
 ConsoleColor BACKGROUND = Black;
 
+ConsoleColor FOOD_FOREGROUND = LightGreen;
+ConsoleColor FOOD_BACKGROUND = LightGreen;
+
+ConsoleColor SNAKE_BODY_FOREGROUND = DarkGray;
+ConsoleColor SNAKE_BODY_BACKGROUND = DarkGray;
+
+ConsoleColor SNAKE_HEAD_FOREGROUND = LightRed;
+ConsoleColor SNAKE_HEAD_BACKGROUND = LightRed;
+
+ConsoleColor BORDER = LightGray;
+
+ConsoleColor SPEED = White;
+ConsoleColor SCORE = White;
+
+ConsoleColor VAL_SPEED = Cyan;
+ConsoleColor VAL_SCORE = Cyan;
+
 void Graph_border(int MAX_X, int MAX_Y)
 {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((BACKGROUND << 4) | BORDER));
 	cout << char(201);//"╔"
 	for (int count_column = 1; count_column < MAX_X - 1; count_column++)
 		cout << char(205);//"═"
@@ -36,6 +54,8 @@ void Graph_border(int MAX_X, int MAX_Y)
 	for (int count_column = 1; count_column < MAX_X - 1; count_column++)
 		cout << char(205);//"═"
 	cout << char(188) << endl;//"╝"
+	cout.flush();
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((Black << 4) | White));
 }
 
 void Symbol_to_point(int X, int Y, char symbol, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
@@ -46,6 +66,7 @@ void Symbol_to_point(int X, int Y, char symbol, ConsoleColor FOREGROUND, Console
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((BACKGROUND << 4) | FOREGROUND));
 	cout << symbol;
+	cout.flush();
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((Black << 4) | White));
 }
 
@@ -57,12 +78,13 @@ void String_to_point(int X, int Y, string str, ConsoleColor FOREGROUND, ConsoleC
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((BACKGROUND << 4) | FOREGROUND));
 	cout << str;
+	cout.flush();
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((Black << 4) | White));
 }
 
 void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int &delta_x, int &delta_y)
 {
-	
+
 	switch (code)
 	{
 	case 72://up 
@@ -146,6 +168,7 @@ void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int 
 	break;
 
 	case 27://ESC
+		Symbol_to_point(1, MAX_Y, ' ', FOREGROUND, BACKGROUND);//start
 		exit(0);
 		break;
 	}
@@ -153,7 +176,7 @@ void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int 
 
 void Coordinate_transformation_automatically(int *X, int *Y, int len, int &delta_x, int &delta_y)
 {
-	
+
 	// Передвигаем тело змейки.
 	for (int i = len; i >= 1; --i)
 	{
@@ -198,7 +221,7 @@ void Generation_of_food_coordinates(int &food_x, int &food_y, int *X, int *Y, in
 	uniform_int_distribution<int> gen_Y(1, (MAX_Y - 2)); // Равномерное распределение [a, c]
 	int rnd_X = gen_X(generator);
 	int rnd_Y = gen_Y(generator);
-	
+
 	bool stop = true;
 
 	while (stop)
@@ -223,7 +246,10 @@ void Generation_of_food_coordinates(int &food_x, int &food_y, int *X, int *Y, in
 			if (rnd_Y != Y[i]) sum_tmp++;
 
 		if ((rnd_Y != food_y) && (sum_tmp == len)) stop = false;
-	} 
+	}
+
+	food_x = rnd_X;
+	food_y = rnd_Y;
 
 }
 
@@ -235,28 +261,43 @@ void Clear_snake(int *X, int *Y, int len, ConsoleColor FOREGROUND, ConsoleColor 
 
 void Print_snake(int *X, int *Y, int len, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
 {
-	for (int i = 0; i <len; i++)
-		Symbol_to_point(X[i], Y[i], '*', FOREGROUND, BACKGROUND);
+		Symbol_to_point(X[0], Y[0], '*', SNAKE_HEAD_FOREGROUND, SNAKE_HEAD_BACKGROUND);
+	for (int i = 1; i <len; i++)
+		Symbol_to_point(X[i], Y[i], char(142), SNAKE_BODY_FOREGROUND, BACKGROUND); //* SNAKE_BODY_BACKGROUND
 }
 
-void Delta_snake(int *X, int *Y, int food_x, int food_y, bool &need_food, int & length_of_snake, int &score)
+void Delta_snake(int *X, int *Y, int food_x, int food_y, bool &need_food, int & length_of_snake, int &score, int &D_delay, int &D_count_for_delay, int &D_print_speed)
 {
 	if ((X[0] == food_x) && (Y[0] == food_y))
 	{
 		need_food = 1;
 		length_of_snake++;
-		score++;
-		String_to_point(1, MAX_Y, "Score: ", FOREGROUND, BACKGROUND);
-		String_to_point(8, MAX_Y, to_string(score), FOREGROUND, BACKGROUND);
+		String_to_point(1, MAX_Y, "Score: ", SCORE, BACKGROUND);
+		String_to_point(8, MAX_Y, to_string(length_of_snake), VAL_SCORE, BACKGROUND);
+		String_to_point(12, MAX_Y, " | Speed: ", SPEED, BACKGROUND);
+		String_to_point(22, MAX_Y, to_string(D_print_speed), VAL_SPEED, BACKGROUND);
+
+		D_count_for_delay++;
+		if (D_count_for_delay == 9)
+		{
+			D_count_for_delay = 0;
+			D_print_speed++;
+			if (D_delay >= 20) D_delay = D_delay - 10;
+		}
 	}
 }
 
 int main()
 {
-	int score = 1;
+	int length_of_snake = 1;//длина змейки
+
+	//D - delay
+	int D_delay = 100;//Задержка
+	int D_count_for_delay = 0;//Счетчик для уменьшения задержки - увеличения скорости змейки
+	int D_print_speed = 1;//Cкорость змейки
+
 	int *p_X_coordinate_of_snake = new int[MAX_X * MAX_Y];//массив координат Х змейки
 	int *p_Y_coordinate_of_snake = new int[MAX_X * MAX_Y];//массив координат У змейки
-	int length_of_snake = 1;//длина змейки
 
 	p_X_coordinate_of_snake[0] = int(MAX_X / 2);//Начальное положение змейки
 	p_Y_coordinate_of_snake[0] = int(MAX_Y / 2);//Начальное положение змейки
@@ -266,8 +307,10 @@ int main()
 	bool need_food = true;
 
 	Graph_border(MAX_X, MAX_Y);//start
-	String_to_point(1, MAX_Y, "Score: ", FOREGROUND, BACKGROUND);//start
-	String_to_point(8, MAX_Y, to_string(score), FOREGROUND, BACKGROUND);//start
+	String_to_point(1, MAX_Y, "Score: ", SCORE, BACKGROUND);//start
+	String_to_point(8, MAX_Y, to_string(length_of_snake), VAL_SCORE, BACKGROUND);//start
+	String_to_point(12, MAX_Y, " | Speed: ", SPEED, BACKGROUND);//start
+	String_to_point(22, MAX_Y, to_string(D_print_speed), VAL_SPEED, BACKGROUND);//start
 
 	while (true)
 	{
@@ -275,7 +318,7 @@ int main()
 		{
 			Symbol_to_point(food_x, food_y, '\0', FOREGROUND, BACKGROUND);
 			Generation_of_food_coordinates(food_x, food_y, p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake);
-			Symbol_to_point(food_x, food_y, 'F', FOREGROUND, BACKGROUND);
+			Symbol_to_point(food_x, food_y, 'F' , FOOD_FOREGROUND, FOOD_BACKGROUND);
 			need_food = false;
 		}
 
@@ -287,9 +330,9 @@ int main()
 		Correction_of_oordinates(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake);
 		Print_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake, FOREGROUND, BACKGROUND);
 
-		Delta_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, food_x, food_y, need_food, length_of_snake, score);
+		Delta_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, food_x, food_y, need_food, length_of_snake, length_of_snake, D_delay, D_count_for_delay, D_print_speed);
 
-		Sleep(START_DELAY);
+		Sleep(D_delay);
 	}
 
 	delete[] p_X_coordinate_of_snake;
