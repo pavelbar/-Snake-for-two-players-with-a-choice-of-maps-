@@ -8,9 +8,9 @@
 
 using namespace std;
 
-const int MAX_Y = 22 + 2;//стр
+const int MAX_Y = 21 + 2;//стр
 const int MAX_X = 77 + 2;//столб
-const int START_DELAY = 50;//задержка
+const int START_DELAY = 150;//задержка
 
 enum ConsoleColor { Black = 0, Blue, Green, Cyan, Red, Magenta, Brown, LightGray, DarkGray, LightBlue, LightGreen, LightCyan, LightRed, LightMagenta, Yellow, White };
 
@@ -49,54 +49,99 @@ void Symbol_to_point(int X, int Y, char symbol, ConsoleColor FOREGROUND, Console
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((Black << 4) | White));
 }
 
-void String_to_point(int X, int Y, string symbol, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
+void String_to_point(int X, int Y, string str, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
 {
 	COORD coord;
 	coord.X = X;
 	coord.Y = Y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((BACKGROUND << 4) | FOREGROUND));
-	cout << symbol;
+	cout << str;
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((Black << 4) | White));
 }
 
 void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int &delta_x, int &delta_y)
 {
+	
 	switch (code)
 	{
 	case 72://up 
 	{
-		for (int i = 0; i < len; i++)
-		Y[i]--;
+		//for (int i = 0; i < len; i++)
+		//Y[i]--;
 		delta_x = 0;
 		delta_y = -1;
+
+		// Передвигаем тело змейки.
+		for (int i = len; i >= 1; --i)
+		{
+			X[i] = X[i - 1];
+			Y[i] = Y[i - 1];
+		}
+
+		// Передвигаем голову змейки.
+		X[0] = X[0] + delta_x;
+		Y[0] = Y[0] + delta_y;
 	}
 	break;
 
 	case 80://down 
 	{
-		for (int i = 0; i < len; i++)
-		Y[i]++;
+		//for (int i = 0; i < len; i++)
+		//Y[i]++;
 		delta_x = 0;
 		delta_y = 1;
+
+		// Передвигаем тело змейки.
+		for (int i = len; i >= 1; --i)
+		{
+			X[i] = X[i - 1];
+			Y[i] = Y[i - 1];
+		}
+
+		// Передвигаем голову змейки.
+		X[0] = X[0] + delta_x;
+		Y[0] = Y[0] + delta_y;
 	}
 	break;
 
 	case 75://left 
 	{
-		for (int i = 0; i < len; i++)
-		X[i]--;
+		//for (int i = 0; i < len; i++)
+		//X[i]--;
 		delta_x = -1;
 		delta_y = 0;
+
+		// Передвигаем тело змейки.
+		for (int i = len; i >= 1; --i)
+		{
+			X[i] = X[i - 1];
+			Y[i] = Y[i - 1];
+		}
+
+		// Передвигаем голову змейки.
+		X[0] = X[0] + delta_x;
+		Y[0] = Y[0] + delta_y;
 	}
 	break;
 
 	case 77://right 
 	{
-		for (int i = 0; i < len; i++)
-		X[i]++;
+		//for (int i = 0; i < len; i++)
+		//X[i]++;
 		delta_x = 1;
 		delta_y = 0;
+
+		// Передвигаем тело змейки.
+		for (int i = len; i >= 1; --i)
+		{
+			X[i] = X[i - 1];
+			Y[i] = Y[i - 1];
+		}
+
+		// Передвигаем голову змейки.
+		X[0] = X[0] + delta_x;
+		Y[0] = Y[0] + delta_y;
 	}
 	break;
 
@@ -108,11 +153,22 @@ void Coordinate_transformation_by_button(int code, int *X, int *Y, int len, int 
 
 void Coordinate_transformation_automatically(int *X, int *Y, int len, int &delta_x, int &delta_y)
 {
-	for (int i = 0; i < len; i++)
+	
+	// Передвигаем тело змейки.
+	for (int i = len; i >= 1; --i)
 	{
-		X[i] = X[i] + delta_x;
-		Y[i] = Y[i] + delta_y;
+		X[i] = X[i - 1];
+		Y[i] = Y[i - 1];
 	}
+
+	// Передвигаем голову змейки.
+	X[0] = X[0] + delta_x;
+	Y[0] = Y[0] + delta_y;
+	//for (int i = 0; i < len; i++)
+	//{
+	//	X[i] = X[i] + delta_x;
+	//	Y[i] = Y[i] + delta_y;
+	//}
 }
 
 void Correction_of_oordinates(int *X, int *Y, int len)
@@ -131,11 +187,7 @@ void Correction_of_oordinates(int *X, int *Y, int len)
 		//zone left (0;1-22)
 		if ((X[i] == 0) && (Y[i] >= 1) && (Y[i] <= (MAX_Y - 2))) X[i] = (MAX_X - 2);
 	}
-	String_to_point(10, MAX_Y + 2, "X=", FOREGROUND, BACKGROUND);//debug
-	String_to_point(12, MAX_Y + 2, to_string(X[0]), FOREGROUND, BACKGROUND);//debug
 
-	String_to_point(10, MAX_Y + 3, "Y=", FOREGROUND, BACKGROUND);//debug
-	String_to_point(12, MAX_Y + 3, to_string(Y[0]), FOREGROUND, BACKGROUND);//debug
 }
 
 void Generation_of_food_coordinates(int &food_x, int &food_y, int *X, int *Y, int len)
@@ -171,9 +223,8 @@ void Generation_of_food_coordinates(int &food_x, int &food_y, int *X, int *Y, in
 			if (rnd_Y != Y[i]) sum_tmp++;
 
 		if ((rnd_Y != food_y) && (sum_tmp == len)) stop = false;
-	}
-	food_x = rnd_X;
-	food_y = rnd_Y;
+	} 
+
 }
 
 void Clear_snake(int *X, int *Y, int len, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
@@ -188,34 +239,35 @@ void Print_snake(int *X, int *Y, int len, ConsoleColor FOREGROUND, ConsoleColor 
 		Symbol_to_point(X[i], Y[i], '*', FOREGROUND, BACKGROUND);
 }
 
-void Delta_snake(int *X, int *Y, int food_x, int food_y, bool &need_food, int & length_of_snake)
+void Delta_snake(int *X, int *Y, int food_x, int food_y, bool &need_food, int & length_of_snake, int &score)
 {
 	if ((X[0] == food_x) && (Y[0] == food_y))
 	{
 		need_food = 1;
 		length_of_snake++;
-		String_to_point(0, MAX_Y + 2, "FOODx=", FOREGROUND, BACKGROUND);//debug
-		String_to_point(7, MAX_Y + 2, to_string(food_x), FOREGROUND, BACKGROUND);//debug
-	
-		String_to_point(0, MAX_Y + 3, "FOODy=", FOREGROUND, BACKGROUND);//debug
-		String_to_point(7, MAX_Y + 3, to_string(food_y), FOREGROUND, BACKGROUND);//debug
+		score++;
+		String_to_point(1, MAX_Y, "Score: ", FOREGROUND, BACKGROUND);
+		String_to_point(8, MAX_Y, to_string(score), FOREGROUND, BACKGROUND);
 	}
 }
 
 int main()
 {
+	int score = 1;
 	int *p_X_coordinate_of_snake = new int[MAX_X * MAX_Y];//массив координат Х змейки
 	int *p_Y_coordinate_of_snake = new int[MAX_X * MAX_Y];//массив координат У змейки
 	int length_of_snake = 1;//длина змейки
 
 	p_X_coordinate_of_snake[0] = int(MAX_X / 2);//Начальное положение змейки
 	p_Y_coordinate_of_snake[0] = int(MAX_Y / 2);//Начальное положение змейки
-	///int X = int(MAX_X / 2), Y = int(MAX_Y / 2);//Начальное положение точки
+
 	int delta_x = 0, delta_y = 0;//Предыдущее изменение позиции
-	int food_x = int(MAX_X / 2), food_y = int(MAX_Y / 2);//Координаты положения еды
+	int food_x = int(MAX_X / 4), food_y = int(MAX_Y / 4);//Координаты положения еды
 	bool need_food = true;
 
 	Graph_border(MAX_X, MAX_Y);//start
+	String_to_point(1, MAX_Y, "Score: ", FOREGROUND, BACKGROUND);//start
+	String_to_point(8, MAX_Y, to_string(score), FOREGROUND, BACKGROUND);//start
 
 	while (true)
 	{
@@ -235,7 +287,7 @@ int main()
 		Correction_of_oordinates(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake);
 		Print_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake, FOREGROUND, BACKGROUND);
 
-		Delta_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, food_x, food_y, need_food, length_of_snake);
+		Delta_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, food_x, food_y, need_food, length_of_snake, score);
 
 		Sleep(START_DELAY);
 	}
