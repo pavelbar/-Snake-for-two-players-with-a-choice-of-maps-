@@ -4,6 +4,7 @@
 #include <iostream> 
 #include <conio.h> 
 #include <random>
+#include <string>
 
 using namespace std;
 
@@ -38,6 +39,17 @@ void Graph_border(int MAX_X, int MAX_Y)
 }
 
 void Symbol_to_point(int X, int Y, char symbol, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
+{
+	COORD coord;
+	coord.X = X;
+	coord.Y = Y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((BACKGROUND << 4) | FOREGROUND));
+	cout << symbol;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)((Black << 4) | White));
+}
+
+void String_to_point(int X, int Y, string symbol, ConsoleColor FOREGROUND, ConsoleColor BACKGROUND)
 {
 	COORD coord;
 	coord.X = X;
@@ -119,6 +131,11 @@ void Correction_of_oordinates(int *X, int *Y, int len)
 		//zone left (0;1-22)
 		if ((X[i] == 0) && (Y[i] >= 1) && (Y[i] <= (MAX_Y - 2))) X[i] = (MAX_X - 2);
 	}
+	String_to_point(10, MAX_Y + 2, "X=", FOREGROUND, BACKGROUND);//debug
+	String_to_point(12, MAX_Y + 2, to_string(X[0]), FOREGROUND, BACKGROUND);//debug
+
+	String_to_point(10, MAX_Y + 3, "Y=", FOREGROUND, BACKGROUND);//debug
+	String_to_point(12, MAX_Y + 3, to_string(Y[0]), FOREGROUND, BACKGROUND);//debug
 }
 
 void Generation_of_food_coordinates(int &food_x, int &food_y, int *X, int *Y, int len)
@@ -155,7 +172,6 @@ void Generation_of_food_coordinates(int &food_x, int &food_y, int *X, int *Y, in
 
 		if ((rnd_Y != food_y) && (sum_tmp == len)) stop = false;
 	}
-
 	food_x = rnd_X;
 	food_y = rnd_Y;
 }
@@ -178,6 +194,11 @@ void Delta_snake(int *X, int *Y, int food_x, int food_y, bool &need_food, int & 
 	{
 		need_food = 1;
 		length_of_snake++;
+		String_to_point(0, MAX_Y + 2, "FOODx=", FOREGROUND, BACKGROUND);//debug
+		String_to_point(7, MAX_Y + 2, to_string(food_x), FOREGROUND, BACKGROUND);//debug
+	
+		String_to_point(0, MAX_Y + 3, "FOODy=", FOREGROUND, BACKGROUND);//debug
+		String_to_point(7, MAX_Y + 3, to_string(food_y), FOREGROUND, BACKGROUND);//debug
 	}
 }
 
