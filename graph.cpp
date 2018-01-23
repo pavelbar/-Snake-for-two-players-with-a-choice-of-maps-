@@ -172,6 +172,15 @@ void Print_snake(int *X, int *Y, int len, ConsoleColor FOREGROUND, ConsoleColor 
 		Symbol_to_point(X[i], Y[i], '*', FOREGROUND, BACKGROUND);
 }
 
+void Delta_snake(int *X, int *Y, int food_x, int food_y, bool &need_food, int & length_of_snake)
+{
+	if ((X[0] == food_x) && (Y[0] == food_y))
+	{
+		need_food = 1;
+		length_of_snake++;
+	}
+}
+
 int main()
 {
 	int *p_X_coordinate_of_snake = new int[MAX_X * MAX_Y];//массив координат Х змейки
@@ -183,18 +192,18 @@ int main()
 	///int X = int(MAX_X / 2), Y = int(MAX_Y / 2);//Начальное положение точки
 	int delta_x = 0, delta_y = 0;//Предыдущее изменение позиции
 	int food_x = int(MAX_X / 2), food_y = int(MAX_Y / 2);//Координаты положения еды
-	bool need_food = 1;
+	bool need_food = true;
 
 	Graph_border(MAX_X, MAX_Y);//start
 
 	while (true)
 	{
-		if (need_food == 1)
+		if (need_food == true)
 		{
 			Symbol_to_point(food_x, food_y, '\0', FOREGROUND, BACKGROUND);
 			Generation_of_food_coordinates(food_x, food_y, p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake);
 			Symbol_to_point(food_x, food_y, 'F', FOREGROUND, BACKGROUND);
-			need_food = 0;
+			need_food = false;
 		}
 
 		Clear_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake, FOREGROUND, BACKGROUND);
@@ -204,6 +213,8 @@ int main()
 
 		Correction_of_oordinates(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake);
 		Print_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, length_of_snake, FOREGROUND, BACKGROUND);
+
+		Delta_snake(p_X_coordinate_of_snake, p_Y_coordinate_of_snake, food_x, food_y, need_food, length_of_snake);
 
 		Sleep(START_DELAY);
 	}
