@@ -215,6 +215,7 @@ int main()
 
 		
 		if (mode == "2") {
+
 			Sleep((snakeOne.getD_Delay()+ snakeTwo.getD_Delay())/2);
 		}
 		else {
