@@ -1,7 +1,16 @@
 #pragma once
+
+#include <string>
+using std::string;
+
+
 class Snake
 {
 public:
+	int SNAKE_BODY_FOREGROUND = 0;
+	int SNAKE_BODY_BACKGROUND = 0;
+	int SNAKE_HEAD_FOREGROUND = 0;
+	int SNAKE_HEAD_BACKGROUND = 0;
 
 	size_t MAX_X = 0;
 	size_t MAX_Y = 0;
@@ -30,7 +39,7 @@ public:
 	void Delta_snake();
 	void Correction_of_oordinates();
 	void Coordinate_transformation_automatically();
-	void Coordinate_transformation_by_button(int code);
+	void Coordinate_transformation_by_button(string code);
 	size_t getLengthOfSnake();
 	size_t getSpeedOfSnake();
 	bool getNeedFood();
@@ -44,5 +53,15 @@ public:
 	size_t getD_Delay();
 	int getDelta_x();
 	int getDelta_y();
+	//
+	int get_SNAKE_BODY_FOREGROUND();
+	int get_SNAKE_BODY_BACKGROUND();
+	int get_SNAKE_HEAD_FOREGROUND();
+	int get_SNAKE_HEAD_BACKGROUND();
+
+	void set_SNAKE_BODY_FOREGROUND(int val);
+	void set_SNAKE_BODY_BACKGROUND(int val);
+	void set_SNAKE_HEAD_FOREGROUND(int val);
+	void set_SNAKE_HEAD_BACKGROUND(int val);
 };
 
