@@ -213,9 +213,12 @@ int main()
 
 		info(gameBoard, snakeOne, snakeTwo, MAX_X, MAX_Y, mode);
 
-		Sleep(snakeOne.getD_Delay());
+		
 		if (mode == "2") {
-			Sleep(snakeTwo.getD_Delay());
+			Sleep((snakeOne.getD_Delay()+ snakeTwo.getD_Delay())/2);
+		}
+		else {
+			Sleep(snakeOne.getD_Delay());
 		}
 	}
 
