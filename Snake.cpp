@@ -13,6 +13,7 @@ Snake::Snake(size_t maxX, size_t maxY)
 
 	p_X_coordinate_of_snake[0] = size_t(MAX_X / 2);//Начальное положение змейки
 	p_Y_coordinate_of_snake[0] = size_t(MAX_Y / 2);//Начальное положение змейки
+	Generation_of_food_coordinates();
 }
 
 void Snake::Generation_of_food_coordinates()
