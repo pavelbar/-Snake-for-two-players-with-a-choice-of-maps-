@@ -3,6 +3,7 @@
 #include <random>
 #include <ctime>  
 
+
 Snake::Snake(size_t maxX, size_t maxY)
 {
 	MAX_X = maxX;
@@ -107,13 +108,10 @@ void Snake::Correction_of_oordinates()
 
 }
 
-void Snake::Coordinate_transformation_by_button(int code)
+void Snake::Coordinate_transformation_by_button(string code)
 {
 
-	switch (code)
-	{
-	case 72://up 
-	{
+	if (code == "up") {
 		delta_x = 0;
 		delta_y = -1;
 
@@ -128,10 +126,9 @@ void Snake::Coordinate_transformation_by_button(int code)
 		p_X_coordinate_of_snake[0] = p_X_coordinate_of_snake[0] + delta_x;
 		p_Y_coordinate_of_snake[0] = p_Y_coordinate_of_snake[0] + delta_y;
 	}
-	break;
 
-	case 80://down 
-	{
+
+	if (code == "down") {
 		delta_x = 0;
 		delta_y = 1;
 
@@ -146,10 +143,9 @@ void Snake::Coordinate_transformation_by_button(int code)
 		p_X_coordinate_of_snake[0] = p_X_coordinate_of_snake[0] + delta_x;
 		p_Y_coordinate_of_snake[0] = p_Y_coordinate_of_snake[0] + delta_y;
 	}
-	break;
 
-	case 75://left 
-	{
+
+	if (code == "left") {
 		delta_x = -1;
 		delta_y = 0;
 
@@ -164,10 +160,9 @@ void Snake::Coordinate_transformation_by_button(int code)
 		p_X_coordinate_of_snake[0] = p_X_coordinate_of_snake[0] + delta_x;
 		p_Y_coordinate_of_snake[0] = p_Y_coordinate_of_snake[0] + delta_y;
 	}
-	break;
 
-	case 77://right 
-	{
+
+	if (code == "right") {
 		delta_x = 1;
 		delta_y = 0;
 
@@ -182,11 +177,9 @@ void Snake::Coordinate_transformation_by_button(int code)
 		p_X_coordinate_of_snake[0] = p_X_coordinate_of_snake[0] + delta_x;
 		p_Y_coordinate_of_snake[0] = p_Y_coordinate_of_snake[0] + delta_y;
 	}
-	break;
 
-	case 27://ESC
+	if (code == "esc") {
 		exit(0);
-		break;
 	}
 }
 
@@ -253,6 +246,46 @@ int Snake::getDelta_x()
 int Snake::getDelta_y()
 {
 	return delta_y;
+}
+
+int Snake::get_SNAKE_BODY_FOREGROUND()
+{
+	return SNAKE_BODY_FOREGROUND;
+}
+
+int Snake::get_SNAKE_BODY_BACKGROUND()
+{
+	return SNAKE_BODY_BACKGROUND;
+}
+
+int Snake::get_SNAKE_HEAD_FOREGROUND()
+{
+	return SNAKE_HEAD_FOREGROUND;
+}
+
+int Snake::get_SNAKE_HEAD_BACKGROUND()
+{
+	return SNAKE_HEAD_BACKGROUND;
+}
+
+void Snake::set_SNAKE_BODY_FOREGROUND(int val)
+{
+	SNAKE_BODY_FOREGROUND = val;
+}
+
+void Snake::set_SNAKE_BODY_BACKGROUND(int val)
+{
+	SNAKE_BODY_BACKGROUND = val;
+}
+
+void Snake::set_SNAKE_HEAD_FOREGROUND(int val)
+{
+	SNAKE_HEAD_FOREGROUND = val;
+}
+
+void Snake::set_SNAKE_HEAD_BACKGROUND(int val)
+{
+	SNAKE_HEAD_BACKGROUND = val;
 }
 
 Snake::~Snake()
