@@ -20,13 +20,15 @@ ConsoleColor SCORE = White;    //main
 ConsoleColor VAL_SPEED = Cyan; //main
 ConsoleColor VAL_SCORE = Cyan; //main
 
-ConsoleColor FOOD_FOREGROUND = LightGreen;     //Snake
-ConsoleColor FOOD_BACKGROUND = LightGreen;     //Snake
+ConsoleColor SNAKEONE_BODY_FOREGROUND = DarkGray; //Snake1
+ConsoleColor SNAKEONE_BODY_BACKGROUND = DarkGray; //Snake1
+ConsoleColor SNAKEONE_HEAD_FOREGROUND = LightRed; //Snake1
+ConsoleColor SNAKEONE_HEAD_BACKGROUND = LightRed; //Snake1
 
-ConsoleColor SNAKEONE_BODY_FOREGROUND = DarkGray; //Snake
-ConsoleColor SNAKEONE_BODY_BACKGROUND = DarkGray; //Snake
-ConsoleColor SNAKEONE_HEAD_FOREGROUND = LightRed; //Snake
-ConsoleColor SNAKEONE_HEAD_BACKGROUND = LightRed; //Snake
+ConsoleColor SNAKETWO_BODY_FOREGROUND = LightMagenta; //Snake2
+ConsoleColor SNAKETWO_BODY_BACKGROUND = LightMagenta; //Snake2
+ConsoleColor SNAKETWO_HEAD_FOREGROUND = Yellow; //Snake2
+ConsoleColor SNAKETWO_HEAD_BACKGROUND = Yellow; //Snake2
 //===END COLOR SETTINGS ZONE===
 
 
@@ -48,7 +50,7 @@ void Print_snake(size_t *X, size_t *Y, size_t len, int delta_x, int delta_y, Gra
 	for (size_t i = 1; i < len; i++)
 		gameBoard.Symbol_to_point(X[i], Y[i], char(142), snake.get_SNAKE_BODY_FOREGROUND(), BACKGROUND); //* SNAKE_BODY_BACKGROUND
 }
-void update(Graph &gameBoard, Snake &snakeOne, size_t MAX_X, size_t MAX_Y, string mode, Snake &snakeTwo) {
+void info(Graph &gameBoard, Snake &snakeOne, Snake &snakeTwo, size_t MAX_X, size_t MAX_Y, string mode) {
 	gameBoard.String_to_point(1, MAX_Y, "Snake 1:", snakeOne.get_SNAKE_HEAD_FOREGROUND(), BACKGROUND);
 	gameBoard.String_to_point(13, MAX_Y, "Score: ", SCORE, BACKGROUND);
 	gameBoard.String_to_point(21, MAX_Y, to_string(snakeOne.getLengthOfSnake()), VAL_SCORE, BACKGROUND);
@@ -94,9 +96,12 @@ int main()
 	snakeOne.set_SNAKE_HEAD_FOREGROUND(SNAKEONE_HEAD_BACKGROUND);
 
 	Snake snakeTwo(MAX_X, MAX_Y);
+	snakeTwo.set_SNAKE_BODY_BACKGROUND(SNAKETWO_BODY_FOREGROUND);
+	snakeTwo.set_SNAKE_BODY_FOREGROUND(SNAKETWO_BODY_BACKGROUND);
+	snakeTwo.set_SNAKE_HEAD_BACKGROUND(SNAKETWO_HEAD_FOREGROUND);
+	snakeTwo.set_SNAKE_HEAD_FOREGROUND(SNAKETWO_HEAD_BACKGROUND);
 
-
-	update(gameBoard, snakeOne, MAX_X, MAX_Y, mode, snakeTwo);
+	info(gameBoard, snakeOne, snakeTwo, MAX_X, MAX_Y, mode);
 	while (true)
 	{
 		if (snakeOne.getNeedFood() == true)
@@ -104,55 +109,114 @@ int main()
 			gameBoard.Symbol_to_point(snakeOne.getFoodX(), snakeOne.getFoodY(), '\0', FOREGROUND, BACKGROUND);
 			snakeOne.Generation_of_food_coordinates();
 
-			gameBoard.Symbol_to_point(snakeOne.getFoodX(), snakeOne.getFoodY(), char(142), FOOD_FOREGROUND, BACKGROUND);
+			gameBoard.Symbol_to_point(snakeOne.getFoodX(), snakeOne.getFoodY(), char(142), snakeOne.get_SNAKE_HEAD_FOREGROUND(), BACKGROUND);
 			snakeOne.setNeedFood(false);
+		}
+		if (mode == "2") {
+			if (snakeTwo.getNeedFood() == true)
+			{
+				gameBoard.Symbol_to_point(snakeTwo.getFoodX(), snakeTwo.getFoodY(), '\0', FOREGROUND, BACKGROUND);
+				snakeTwo.Generation_of_food_coordinates();
+
+				gameBoard.Symbol_to_point(snakeTwo.getFoodX(), snakeTwo.getFoodY(), char(142), snakeTwo.get_SNAKE_HEAD_FOREGROUND(), BACKGROUND);
+				snakeTwo.setNeedFood(false);
+			}
 		}
 
 		Clear_snake(snakeOne.getX_coordinate_of_snake(), snakeOne.getY_coordinate_of_snake(), snakeOne.getLengthOfSnake(), gameBoard);
+		if (mode == "2") {
+			Clear_snake(snakeTwo.getX_coordinate_of_snake(), snakeTwo.getY_coordinate_of_snake(), snakeTwo.getLengthOfSnake(), gameBoard);
+		}
+
+
 		if (_kbhit() != 0) {
 			int code = _getch();
 
-			switch (code)
-			{
-			case 72://up 
+			if (code == 72)//up
 			{
 				snakeOne.Coordinate_transformation_by_button("up");
 			}
-			break;
 
-			case 80://down 
+			if (code == 87 || code == 119)//w
+			{
+				if (mode == "2") {
+					snakeTwo.Coordinate_transformation_by_button("up");
+				}
+			}
+
+			if (code == 80)//down
 			{
 				snakeOne.Coordinate_transformation_by_button("down");
 			}
-			break;
 
-			case 75://left 
+			if (code == 83 || code == 115)//s
+			{
+				if (mode == "2") {
+					snakeTwo.Coordinate_transformation_by_button("down");
+				}
+			}
+
+			if (code == 75)//left
 			{
 				snakeOne.Coordinate_transformation_by_button("left");
 			}
-			break;
 
-			case 77://right 
+			if (code == 65 || code == 97)//a
+			{
+				if (mode == "2") {
+					snakeTwo.Coordinate_transformation_by_button("left");
+				}
+			}
+
+			if (code == 77)//right
 			{
 				snakeOne.Coordinate_transformation_by_button("right");
 			}
-			break;
 
-			case 27://ESC
-				snakeOne.Coordinate_transformation_by_button("esc");
+			if (code == 68 || code == 100)//d
+			{
+				if (mode == "2") {
+					snakeTwo.Coordinate_transformation_by_button("right");
+				}
 			}
+
+			if (code == 27)//ESC
+				snakeOne.Coordinate_transformation_by_button("esc");
 
 		}
 		else {
-			snakeOne.Coordinate_transformation_automatically();//если кнопка не нажата
+			//если кнопка не нажата
+			snakeOne.Coordinate_transformation_automatically();
+			if (mode == "2") {
+				snakeTwo.Coordinate_transformation_automatically();
+			}
 		}
 		snakeOne.Correction_of_oordinates();
+		if (mode == "2") {
+			snakeTwo.Correction_of_oordinates();
+		}
+
 		Print_snake(snakeOne.getX_coordinate_of_snake(), snakeOne.getY_coordinate_of_snake(), snakeOne.getLengthOfSnake(), snakeOne.getDelta_x(), snakeOne.getDelta_y(), gameBoard, snakeOne);
+		if (mode == "2") {
+			Print_snake(snakeTwo.getX_coordinate_of_snake(), snakeTwo.getY_coordinate_of_snake(), snakeTwo.getLengthOfSnake(), snakeTwo.getDelta_x(), snakeTwo.getDelta_y(), gameBoard, snakeTwo);
+		}
 
 		snakeOne.Delta_snake();
-		update(gameBoard, snakeOne, MAX_X, MAX_Y, mode, snakeTwo);
+		if (mode == "2") {
+			snakeTwo.Delta_snake();
+		}
+
+		gameBoard.Symbol_to_point(snakeOne.getFoodX(), snakeOne.getFoodY(), char(142), snakeOne.get_SNAKE_HEAD_FOREGROUND(), BACKGROUND);
+		if (mode == "2") {
+			gameBoard.Symbol_to_point(snakeTwo.getFoodX(), snakeTwo.getFoodY(), char(142), snakeTwo.get_SNAKE_HEAD_FOREGROUND(), BACKGROUND);
+		}
+
+		info(gameBoard, snakeOne, snakeTwo, MAX_X, MAX_Y, mode);
 
 		Sleep(snakeOne.getD_Delay());
+		if (mode == "2") {
+			Sleep(snakeTwo.getD_Delay());
+		}
 	}
 
 	return 0;
